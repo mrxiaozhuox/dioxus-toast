@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_toast::{ToastManager, ToastInfo};
 
 fn main() {
     dioxus::desktop::launch(app)
@@ -10,18 +11,16 @@ fn app(cx: Scope) -> Element {
         println!("Panic: {}", info);
     }));
 
-    let (_, toast) = use_state(&cx, || false);
+    let toast = use_ref(&cx, ToastManager::default);
 
     cx.render(rsx! {
-        dioxus_toast::Toast {
-            heading: "Information",
-            text: "hello world",
-            state: toast.clone(),
-        }
+        dioxus_toast::Toast { }
         div {
             button {
                 onclick: move |_| {
-                    toast.setter()(true);
+                    toast.write().popup(ToastInfo {
+                        
+                    })
                 },
                 "弹出"
             }
