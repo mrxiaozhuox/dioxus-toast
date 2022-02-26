@@ -14,13 +14,15 @@ fn app(cx: Scope) -> Element {
     let toast = use_ref(&cx, ToastManager::default);
 
     cx.render(rsx! {
-        dioxus_toast::Toast { }
+        dioxus_toast::Toast {
+            manager: toast
+        }
         div {
             button {
                 onclick: move |_| {
                     toast.write().popup(ToastInfo {
-                        
-                    })
+                        text: "hello world".into(),
+                    });
                 },
                 "弹出"
             }

@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct ToastManager {
     list: HashMap<Uuid, ToastInfo>,
 }
@@ -22,10 +22,14 @@ impl ToastManager {
 
 #[derive(Clone, Debug)]
 pub struct ToastInfo {
-
+    pub text: String
 }
 
-pub fn Toast(cx: Scope) -> Element {
+#[inline_props]
+pub fn Toast<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
+
+    println!("{:?}", manager.read());
+
     cx.render(rsx! {
         div {
             class: "toast-scope",
