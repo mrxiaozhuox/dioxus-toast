@@ -15,7 +15,6 @@ pub struct ToastManager {
 
 impl ToastManager {
     pub fn popup(&mut self, option: ToastInfo) -> u8 {
-        
         self.id_index += 1;
         let toast_id = self.id_index;
 
@@ -73,23 +72,54 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
     for (id, info) in toast_list {
+        let current_id = *id;
+
+        let icon_class = if let Some(icon) = &info.icon {
+            let mut class = String::from("has-icon ");
+
+            match icon {
+                Icon::Success => class.push_str("icon-success"),
+                Icon::Warning => class.push_str("icon-warning"),
+                Icon::Error => class.push_str("icon-error"),
+                Icon::Info => class.push_str("icon-info"),
+            }
+
+            class
+        } else {
+            String::new()
+        };
+
         let element = rsx! {
             div {
-                class: "toast-single",
+                class: "toast-single {icon_class}",
                 id: "{id}",
-                dangerous_inner_html: "{info.context}",
                 if info.allow_toast_close {
                     cx.render(rsx! {
                         div {
                             class: "close-toast-single",
-                            onclick: |_| {
-                                // let curr_id = id.clone();
+                            onclick: move |_| {
+                                manager.write().list.remove(&current_id);
+                                manager.write().timer.remove(&current_id);
                             },
                             "×",
                         }
                     })
                 } else {
                     None
+                }
+                if let Some(v) = &info.heading {
+                    cx.render(rsx! {
+                        h2 {
+                            class: "toast-heading",
+                            "{v}"
+                        }
+                    })
+                } else {
+                    None
+                }
+
+                span {
+                    dangerous_inner_html: "{info.context}",
                 }
             }
         };
