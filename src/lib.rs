@@ -21,25 +21,44 @@ impl ToastManager {
 }
 
 #[derive(Debug)]
+pub enum Position {
+    BottomLeft,
+    BottomRight,
+    TopLeft,
+    TopRight,
+}
+
+#[derive(Debug)]
 pub struct ToastInfo {
-    text: String
+    pub text: String,
+    pub close_button: bool,
+    pub position: Position,
 }
 
 #[inline_props]
 pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
+    // println!("{:?}", manager.read());
 
-    println!("{:?}", manager.read());
+    let toast_list = &manager.read().list;
+    
+    let toast_elements = toast_list.iter().map(
+        |(_id, info)| {
+            rsx! {
+                div {
+                    class: "toast-single",
+                    "{info.text}"
+                }
+            }
+        }
+    );
 
     cx.render(rsx! {
         div {
             class: "toast-scope",
             style { [ include_str!("./assets/toast.css") ] },
             div {
-                class: "toast-wrap",
-                div {
-                    class: "toast-single",
-                    "123"
-                }
+                class: "toast-wrap bottom-left",
+                toast_elements
             }
         }
     })
