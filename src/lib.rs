@@ -58,7 +58,20 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
             style { [ include_str!("./assets/toast.css") ] },
             div {
                 class: "toast-wrap bottom-left",
+                id: "wrap-bottom-left",
                 toast_elements
+            }
+            div {
+                class: "toast-wrap bottom-right",
+                id: "wrap-bottom-right",
+            }
+            div {
+                class: "toast-wrap top-left",
+                id: "wrap-top-left",
+            }
+            div {
+                class: "toast-wrap top-right",
+                id: "wrap-top-right",
             }
         }
     })
