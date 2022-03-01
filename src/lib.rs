@@ -8,31 +8,25 @@ use dioxus::prelude::*;
 use uuid::Uuid;
 
 #[derive(Default, Debug)]
-pub struct ToastManager<'a> {
-    list: HashMap<Uuid, Element<'a>>,
+pub struct ToastManager {
+    list: HashMap<Uuid, ToastInfo>,
 }
 
-impl<'a> ToastManager<'a> {
-    pub fn popup(&mut self, option: Element<'a>) -> Uuid {
+impl ToastManager {
+    pub fn popup(&mut self, option: ToastInfo) -> Uuid {
         let uuid = Uuid::new_v4();
         self.list.insert(uuid, option);
         uuid
     }
 }
 
-#[derive(Props)]
-pub struct ToastProps<'a> {
-    text: &'a str
-}
-
-pub fn Toast<'a>(cx: Scope<'a, ToastProps<'a>>) -> Element {
-    cx.render(rsx! {
-        div {}
-    })
+#[derive(Debug)]
+pub struct ToastInfo {
+    text: String
 }
 
 #[inline_props]
-pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager<'a>>) -> Element {
+pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
 
     println!("{:?}", manager.read());
 
