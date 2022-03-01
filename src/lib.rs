@@ -20,7 +20,7 @@ impl ToastManager {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Position {
     BottomLeft,
     BottomRight,
@@ -41,16 +41,31 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
 
     let toast_list = &manager.read().list;
     
-    let toast_elements = toast_list.iter().map(
-        |(_id, info)| {
-            rsx! {
-                div {
-                    class: "toast-single",
-                    "{info.text}"
-                }
+    let mut bottom_left_ele: Vec<LazyNodes> = vec![];
+    let mut bottom_right_ele: Vec<LazyNodes> = vec![];
+    let mut top_left_ele: Vec<LazyNodes> = vec![];
+    let mut top_right_ele: Vec<LazyNodes> = vec![];
+
+    for (id, info) in toast_list {
+
+        let element = rsx! {
+            div {
+                class: "toast-single",
+                id: "{id}",
+                "{info.text}"
             }
+        };
+
+        if info.position == Position::BottomLeft {
+            bottom_left_ele.push(element);
+        } else if info.position == Position::BottomRight {
+            bottom_right_ele.push(element);
+        } else if info.position == Position::TopLeft {
+            top_left_ele.push(element);
+        } else if info.position == Position::TopRight {
+            top_right_ele.push(element);
         }
-    );
+    }
 
     cx.render(rsx! {
         div {
@@ -59,19 +74,22 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
             div {
                 class: "toast-wrap bottom-left",
                 id: "wrap-bottom-left",
-                toast_elements
+                bottom_left_ele
             }
             div {
                 class: "toast-wrap bottom-right",
                 id: "wrap-bottom-right",
+                bottom_right_ele
             }
             div {
                 class: "toast-wrap top-left",
                 id: "wrap-top-left",
+                top_left_ele
             }
             div {
                 class: "toast-wrap top-right",
                 id: "wrap-top-right",
+                top_right_ele
             }
         }
     })

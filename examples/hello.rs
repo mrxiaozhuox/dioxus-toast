@@ -23,6 +23,7 @@ fn app(cx: Scope) -> Element {
                     toast.write().popup(ToastInfo {
                         text: "hello world".into(),
                         close_button: true,
+                        position: dioxus_toast::Position::BottomLeft,
                     });
                 },
                 "弹出"
