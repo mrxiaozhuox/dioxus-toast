@@ -28,11 +28,22 @@ pub enum Position {
     TopRight,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum Icon {
+    Success,
+    Warning,
+    Error,
+    Info,
+}
+
 #[derive(Debug)]
 pub struct ToastInfo {
-    pub text: String,
-    pub close_button: bool,
+    pub heading: Option<String>,
+    pub context: String,
+    pub allow_toast_close: bool,
     pub position: Position,
+    pub icon: Option<Icon>,
+    pub hide_after: Option<usize>,
 }
 
 #[inline_props]
@@ -52,7 +63,7 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
             div {
                 class: "toast-single",
                 id: "{id}",
-                "{info.text}"
+                dangerous_inner_html: "{info.context}"
             }
         };
 

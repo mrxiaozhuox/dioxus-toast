@@ -1,12 +1,11 @@
 use dioxus::prelude::*;
-use dioxus_toast::{ToastManager, ToastInfo};
+use dioxus_toast::{ToastInfo, ToastManager};
 
 fn main() {
     dioxus::desktop::launch(app)
 }
 
 fn app(cx: Scope) -> Element {
-
     std::panic::set_hook(Box::new(|info| {
         println!("Panic: {}", info);
     }));
@@ -21,9 +20,12 @@ fn app(cx: Scope) -> Element {
             button {
                 onclick: move |_| {
                     toast.write().popup(ToastInfo {
-                        text: "hello world".into(),
-                        close_button: true,
-                        position: dioxus_toast::Position::BottomLeft,
+                        heading:Some("Hello Dioxus".into()),
+                        context:"hello world: <a href=\"#\">Dioxus</a>".into(),
+                        allow_toast_close:true,
+                        position:dioxus_toast::Position::BottomLeft, 
+                        icon: None, 
+                        hide_after: None, 
                     });
                 },
                 "弹出"
