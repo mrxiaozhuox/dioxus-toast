@@ -19,16 +19,17 @@ fn app(cx: Scope) -> Element {
         div {
             button {
                 onclick: move |_| {
-                    toast.write().popup(ToastInfo {
+                    let _id = toast.write().popup(ToastInfo {
                         heading:Some("Hello Dioxus".into()),
                         context:"hello world: <a href=\"#\">Dioxus</a>".into(),
                         allow_toast_close:true,
                         position:dioxus_toast::Position::BottomLeft, 
                         icon: None, 
-                        hide_after: None, 
+                        hide_after: Some(5), 
                     });
+                    println!("New Toast ID: {}", _id);
                 },
-                "弹出"
+                "Toast"
             }
         }
     })
