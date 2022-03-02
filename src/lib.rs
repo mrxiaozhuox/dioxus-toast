@@ -89,10 +89,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     let mut top_left_ele: Vec<LazyNodes> = vec![];
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
-    if toast_list.len() >= cx.props.maximum.into() {
-        let latest_index = manager.read().id_index - 1;
-    }
-
+    let mut current_num = 1_u8;
     for (id, item) in toast_list {
         let current_id = *id;
 
@@ -145,6 +142,10 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
             }
         };
 
+        if current_num >= cx.props.maximum {
+            break;
+        }
+
         if item.info.position == Position::BottomLeft {
             bottom_left_ele.push(element);
         } else if item.info.position == Position::BottomRight {
@@ -154,6 +155,8 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
         } else if item.info.position == Position::TopRight {
             top_right_ele.push(element);
         }
+
+        current_num += 1;
     }
 
     use_future(&cx, || {

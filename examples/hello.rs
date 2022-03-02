@@ -21,7 +21,7 @@ fn app(cx: Scope) -> Element {
                 onclick: move |_| {
                     let _id = toast.write().popup(ToastInfo {
                         heading:Some("Hello Dioxus".into()),
-                        context:"hello world: <a href=\"#\">Dioxus</a>".into(),
+                        context:"hello world: <a href=\"https://dioxuslabs.com/\">Dioxus</a>".into(),
                         allow_toast_close:true,
                         position:dioxus_toast::Position::BottomLeft, 
                         icon: None, 
