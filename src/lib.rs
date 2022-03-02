@@ -89,7 +89,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     let mut top_left_ele: Vec<LazyNodes> = vec![];
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
-    let mut current_num = 1_u8;
+    let mut current_num = 0_u8;
     for (id, item) in toast_list {
         let current_id = *id;
 
