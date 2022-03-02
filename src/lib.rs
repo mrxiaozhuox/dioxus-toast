@@ -2,13 +2,13 @@
 
 // mod style;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 
 use dioxus::prelude::*;
 
 #[derive(Default, Debug)]
 pub struct ToastManager {
-    list: HashMap<u8, ToastInfo>,
+    list: BTreeMap<u8, ToastInfo>,
     timer: HashMap<u8, (i64, usize)>,
     id_index: u8,
 }
