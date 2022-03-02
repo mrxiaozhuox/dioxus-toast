@@ -29,7 +29,7 @@ impl ToastManager {
         let timestamp = chrono::Local::now().timestamp();
 
         self.list.insert(toast_id, ToastManagerItem {
-            info: option.clone(),
+            info: option,
             timestamp,
             hide_after,
         });
@@ -90,7 +90,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
     if toast_list.len() >= cx.props.maximum.into() {
-        // manager
+        let latest_index = manager.read().id_index - 1;
     }
 
     for (id, item) in toast_list {
