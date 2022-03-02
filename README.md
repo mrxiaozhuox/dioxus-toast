@@ -12,13 +12,13 @@
                 onclick: move |_| {
                     let _id = toast.write().popup(ToastInfo {
                         heading:Some("Hello Dioxus".into()),
-                        context:"hello world: <a href=\"https://dioxuslabs.com/\">Dioxus</a>".into(),
+                        context:"Hello <a href=\"https://dioxuslabs.com/\">Dioxus</a>".into(),
                         allow_toast_close:true,
                         position:dioxus_toast::Position::BottomLeft, 
                         icon: None, 
                         hide_after: Some(5), 
                     });
-                    println!("New Toast ID: {}", _id);
+                    // println!("New Toast ID: {}", _id);
                 },
                 "Normal Toast"
             }
@@ -32,7 +32,7 @@
                         icon: Some(Icon::Success), 
                         hide_after: Some(5), 
                     });
-                    println!("New Toast ID: {}", _id);  
+                    // println!("New Toast ID: {}", _id);  
                 },
                 "Success Toast"
             }
