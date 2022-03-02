@@ -1,15 +1,22 @@
 #![allow(non_snake_case)]
+// #![feature(map_first_last)]
 
 // mod style;
 
-use std::collections::{HashMap, BTreeMap};
+use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
 
+#[derive(Debug, Clone)]
+struct ToastManagerItem {
+    info: ToastInfo,
+    timestamp: i64,
+    hide_after: usize,
+}
+
 #[derive(Default, Debug)]
 pub struct ToastManager {
-    list: BTreeMap<u8, ToastInfo>,
-    timer: HashMap<u8, (i64, usize)>,
+    list: BTreeMap<u8, ToastManagerItem>,
     id_index: u8,
 }
 
@@ -18,18 +25,20 @@ impl ToastManager {
         self.id_index += 1;
         let toast_id = self.id_index;
 
-        self.list.insert(toast_id, option.clone());
-
         let hide_after = option.hide_after.unwrap_or(0);
         let timestamp = chrono::Local::now().timestamp();
-        self.timer.insert(toast_id, (timestamp, hide_after));
+
+        self.list.insert(toast_id, ToastManagerItem {
+            info: option.clone(),
+            timestamp,
+            hide_after,
+        });
 
         toast_id
     }
 
     pub fn clear(&mut self) {
         self.list.clear();
-        self.timer.clear();
         self.id_index = 0;
     }
 }
@@ -60,9 +69,18 @@ pub struct ToastInfo {
     pub hide_after: Option<usize>,
 }
 
-#[inline_props]
-pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
+#[derive(Props)]
+pub struct ToastFrameProps<'a> {
+    manager: &'a UseRef<ToastManager>,
+
+    #[props(default = 5)]
+    maximum: u8,
+}
+
+pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     // println!("{:?}", manager.read());
+
+    let manager = cx.props.manager;
 
     let toast_list = &manager.read().list;
 
@@ -71,10 +89,14 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
     let mut top_left_ele: Vec<LazyNodes> = vec![];
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
-    for (id, info) in toast_list {
+    if toast_list.len() >= cx.props.maximum.into() {
+        // manager
+    }
+
+    for (id, item) in toast_list {
         let current_id = *id;
 
-        let icon_class = if let Some(icon) = &info.icon {
+        let icon_class = if let Some(icon) = &item.info.icon {
             let mut class = String::from("has-icon ");
 
             match icon {
@@ -93,13 +115,12 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
             div {
                 class: "toast-single {icon_class}",
                 id: "{id}",
-                if info.allow_toast_close {
+                if item.info.allow_toast_close {
                     cx.render(rsx! {
                         div {
                             class: "close-toast-single",
                             onclick: move |_| {
                                 manager.write().list.remove(&current_id);
-                                manager.write().timer.remove(&current_id);
                             },
                             "×",
                         }
@@ -107,7 +128,7 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
                 } else {
                     None
                 }
-                if let Some(v) = &info.heading {
+                if let Some(v) = &item.info.heading {
                     cx.render(rsx! {
                         h2 {
                             class: "toast-heading",
@@ -119,34 +140,34 @@ pub fn ToastFrame<'a>(cx: Scope, manager: &'a UseRef<ToastManager>) -> Element {
                 }
 
                 span {
-                    dangerous_inner_html: "{info.context}",
+                    dangerous_inner_html: "{item.info.context}",
                 }
             }
         };
 
-        if info.position == Position::BottomLeft {
+        if item.info.position == Position::BottomLeft {
             bottom_left_ele.push(element);
-        } else if info.position == Position::BottomRight {
+        } else if item.info.position == Position::BottomRight {
             bottom_right_ele.push(element);
-        } else if info.position == Position::TopLeft {
+        } else if item.info.position == Position::TopLeft {
             top_left_ele.push(element);
-        } else if info.position == Position::TopRight {
+        } else if item.info.position == Position::TopRight {
             top_right_ele.push(element);
         }
     }
 
     use_future(&cx, || {
-        let toast_manager = manager.to_owned().clone();
+        let toast_manager = manager.clone();
         async move {
             loop {
-                let timer_list = toast_manager.read().timer.clone();
+                let timer_list = toast_manager.read().list.clone();
                 for (id, time) in &timer_list {
+                    let time = (time.timestamp, time.hide_after);
                     let current_time = chrono::Local::now().timestamp();
                     let expire_time = time.0 + time.1 as i64;
                     // println!("{:?} -> {:?}", current_time, expire_time);
                     if current_time >= expire_time && time.1 != 0_usize {
                         toast_manager.write().list.remove(id);
-                        toast_manager.write().timer.remove(id);
                     }
                 }
                 if toast_manager.read().list.is_empty() {
