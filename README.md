@@ -10,14 +10,7 @@ cx.render(rsx! {
     div {
         button {
             onclick: move |_| {
-                let _id = toast.write().popup(ToastInfo {
-                    heading:Some("Hello Dioxus".into()),
-                    context:"Hello <a href=\"https://dioxuslabs.com/\">Dioxus</a>".into(),
-                    allow_toast_close:true,
-                    position:dioxus_toast::Position::BottomLeft, 
-                    icon: None, 
-                    hide_after: Some(5), 
-                });
+                let _id = toast.write().popup(ToastInfo::simple("Hello Dioxus"));
             },
             "Normal Toast"
         }

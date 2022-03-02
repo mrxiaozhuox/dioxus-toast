@@ -37,6 +37,10 @@ impl ToastManager {
         toast_id
     }
 
+    pub fn remove(&mut self, id: u8) {
+        self.list.remove(&id);
+    }
+
     pub fn clear(&mut self) {
         self.list.clear();
         self.id_index = 0;
@@ -67,6 +71,63 @@ pub struct ToastInfo {
     pub position: Position,
     pub icon: Option<Icon>,
     pub hide_after: Option<usize>,
+}
+
+impl ToastInfo {
+    pub fn simple(text: &str) -> Self {
+        Self {
+            heading: None,
+            context: text.to_string(),
+            allow_toast_close: true,
+            position: Position::BottomLeft,
+            icon: None,
+            hide_after: Some(6000),
+        }
+    }
+
+    pub fn success(text: &str, heading: &str) -> Self {
+        Self {
+            heading: Some(heading.to_string()),
+            context: text.to_string(),
+            allow_toast_close: true,
+            position: Position::BottomLeft,
+            icon: Some(Icon::Success),
+            hide_after: Some(6000),
+        }
+    }
+
+    pub fn warning(text: &str, heading: &str) -> Self {
+        Self {
+            heading: Some(heading.to_string()),
+            context: text.to_string(),
+            allow_toast_close: true,
+            position: Position::BottomLeft,
+            icon: Some(Icon::Warning),
+            hide_after: Some(6000),
+        }
+    }
+
+    pub fn info(text: &str, heading: &str) -> Self {
+        Self {
+            heading: Some(heading.to_string()),
+            context: text.to_string(),
+            allow_toast_close: true,
+            position: Position::BottomLeft,
+            icon: Some(Icon::Info),
+            hide_after: Some(6000),
+        }
+    }
+
+    pub fn error(text: &str, heading: &str) -> Self {
+        Self {
+            heading: Some(heading.to_string()),
+            context: text.to_string(),
+            allow_toast_close: true,
+            position: Position::BottomLeft,
+            icon: Some(Icon::Error),
+            hide_after: Some(6000),
+        }
+    }
 }
 
 #[derive(Props)]
