@@ -34,17 +34,23 @@ fn app(cx: Scope) -> Element {
             }
             button {
                 onclick: move |_| {
-                    let _id = toast.write().popup(ToastInfo {
-                        heading:Some("Success!".into()),
-                        context:"Dioxus Toast".into(),
-                        allow_toast_close:true,
-                        position:dioxus_toast::Position::BottomLeft, 
-                        icon: Some(Icon::Success), 
-                        hide_after: Some(5), 
-                    });
+                    let _id = toast.write().popup(ToastInfo::success("Hello World!", "Success"));
                     println!("New Toast ID: {}", _id);  
                 },
                 "Success Toast"
+            }
+            button {
+                onclick: move |_| {
+                    let _id = toast.write().popup(ToastInfo {
+                        heading: Some("top-right".into()),
+                        context: "Top Right Toast".into(),
+                        allow_toast_close: true,
+                        position: dioxus_toast::Position::TopRight,
+                        icon: None,
+                        hide_after: None
+                    });
+                },
+                "Top Right"
             }
         }
     })
