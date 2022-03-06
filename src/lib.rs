@@ -1,5 +1,4 @@
 #![allow(non_snake_case)]
-// #![feature(map_first_last)]
 
 // mod style;
 
@@ -81,7 +80,7 @@ impl ToastInfo {
             allow_toast_close: true,
             position: Position::BottomLeft,
             icon: None,
-            hide_after: Some(6000),
+            hide_after: Some(6),
         }
     }
 
@@ -92,7 +91,7 @@ impl ToastInfo {
             allow_toast_close: true,
             position: Position::BottomLeft,
             icon: Some(Icon::Success),
-            hide_after: Some(6000),
+            hide_after: Some(6),
         }
     }
 
@@ -103,7 +102,7 @@ impl ToastInfo {
             allow_toast_close: true,
             position: Position::BottomLeft,
             icon: Some(Icon::Warning),
-            hide_after: Some(6000),
+            hide_after: Some(6),
         }
     }
 
@@ -114,7 +113,7 @@ impl ToastInfo {
             allow_toast_close: true,
             position: Position::BottomLeft,
             icon: Some(Icon::Info),
-            hide_after: Some(6000),
+            hide_after: Some(6),
         }
     }
 
@@ -125,7 +124,7 @@ impl ToastInfo {
             allow_toast_close: true,
             position: Position::BottomLeft,
             icon: Some(Icon::Error),
-            hide_after: Some(6000),
+            hide_after: Some(6),
         }
     }
 }
@@ -218,7 +217,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
 
     }
 
-    use_future(&cx, || {
+    use_future(&cx, (), |_| {
         let toast_manager = manager.clone();
         async move {
             loop {
