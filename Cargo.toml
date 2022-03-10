@@ -1,6 +1,6 @@
 [package]
 name = "dioxus-toast"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["YuKun Liu <mrxzx.info@gmail.com>"]
 repository = "https://github.com/mrxiaozhuox/dioxus-toast"
 license = "MIT"
