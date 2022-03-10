@@ -1,5 +1,7 @@
 # dioxus-toast
 
+> Add toast support in your dioxus project.
+
 ```rust
 let toast = use_ref(&cx, ToastManager::default);
 
