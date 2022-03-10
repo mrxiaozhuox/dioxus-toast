@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
-use dioxus_toast::{ToastInfo, ToastManager, Icon};
+use dioxus_toast::{ToastInfo, ToastManager};
 
 fn main() {
-    dioxus::desktop::launch(app)
+    // dioxus::desktop::launch(app)
 }
 
 fn app(cx: Scope) -> Element {
