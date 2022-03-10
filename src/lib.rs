@@ -27,11 +27,14 @@ impl ToastManager {
         let hide_after = option.hide_after.unwrap_or(0);
         let timestamp = chrono::Local::now().timestamp();
 
-        self.list.insert(toast_id, ToastManagerItem {
-            info: option,
-            timestamp,
-            hide_after,
-        });
+        self.list.insert(
+            toast_id,
+            ToastManagerItem {
+                info: option,
+                timestamp,
+                hide_after,
+            },
+        );
 
         toast_id
     }
@@ -214,7 +217,6 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
         } else if item.info.position == Position::TopRight {
             top_right_ele.push(element);
         }
-
     }
 
     use_future(&cx, (), |_| {
@@ -234,7 +236,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
                 if toast_manager.read().list.is_empty() {
                     toast_manager.write().id_index = 0;
                 }
-                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                time_sleep(100).await;
             }
         }
     });
@@ -265,4 +267,14 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
             }
         }
     })
+}
+
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+async fn time_sleep(interval: usize) {
+    gloo_timers::future::TimeoutFuture::new(interval as u32).await;
+}
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+async fn time_sleep(interval: usize) {
+    tokio::time::sleep(tokio::time::Duration::from_millis(interval as u64)).await;
 }

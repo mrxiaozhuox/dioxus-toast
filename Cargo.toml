@@ -1,6 +1,6 @@
 [package]
 name = "dioxus-toast"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["YuKun Liu <mrxzx.info@gmail.com>"]
 repository = "https://github.com/mrxiaozhuox/dioxus-toast"
 license = "MIT"
@@ -10,6 +10,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.2.2", features = ["html"] }
-chrono = "0.4.19"
+chrono = { version = "0.4.19", features = ["wasmbind"] }
+
+[target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
+dioxus = { version = "0.2.3", features = ["desktop"] }
 tokio = { version = "1.17.0", features = ["time"] }
+
+[target.'cfg(any(target_arch = "wasm32", target_arch = "wasm64"))'.dependencies]
+dioxus = { version = "0.2.3", features = ["web"] }
+gloo-timers = { version = "0.2.3", features = ["futures"] }
