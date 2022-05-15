@@ -270,12 +270,12 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     })
 }
 
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+#[cfg(feature = "web")]
 async fn time_sleep(interval: usize) {
     gloo_timers::future::TimeoutFuture::new(interval as u32).await;
 }
 
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+#[cfg(feature = "desktop")]
 async fn time_sleep(interval: usize) {
     tokio::time::sleep(tokio::time::Duration::from_millis(interval as u64)).await;
 }
