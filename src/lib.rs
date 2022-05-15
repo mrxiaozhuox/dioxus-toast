@@ -5,6 +5,7 @@
 use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
+use dioxus::fermi::UseAtomRef;
 
 #[derive(Debug, Clone)]
 struct ToastManagerItem {
@@ -134,7 +135,7 @@ impl ToastInfo {
 
 #[derive(Props)]
 pub struct ToastFrameProps<'a> {
-    manager: &'a UseRef<ToastManager>,
+    manager: &'a UseAtomRef<ToastManager>,
 
     #[props(default = 5)]
     maximum: u8,

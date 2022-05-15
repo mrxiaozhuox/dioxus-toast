@@ -3,32 +3,56 @@
 > Add toast support in your dioxus project.
 
 ```rust
-let toast = use_ref(&cx, ToastManager::default);
+use dioxus::prelude::*;
+use dioxus_toast::{ToastInfo, ToastManager};
 
-cx.render(rsx! {
-    dioxus_toast::ToastFrame {
-        manager: toast
-    }
-    div {
-        button {
-            onclick: move |_| {
-                let _id = toast.write().popup(ToastInfo::simple("Hello Dioxus"));
-            },
-            "Normal Toast"
+fn main() {
+    dioxus::desktop::launch(app)
+}
+
+static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
+
+fn app(cx: Scope) -> Element {
+    std::panic::set_hook(Box::new(|info| {
+        println!("Panic: {}", info);
+    }));
+
+    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+
+    cx.render(rsx! {
+        dioxus_toast::ToastFrame {
+            manager: toast
         }
-        button {
-            onclick: move |_| {
-                let _id = toast.write().popup(ToastInfo {
-                    heading:Some("Success!".into()),
-                    context:"Dioxus Toast".into(),
-                    allow_toast_close:true,
-                    position:dioxus_toast::Position::BottomLeft, 
-                    icon: Some(Icon::Success), 
-                    hide_after: Some(5), 
-                });
-            },
-            "Success Toast"
+        div {
+            button {
+                onclick: move |_| {
+                    let _id = toast.write().popup(ToastInfo::simple("hello world"));
+                    println!("New Toast ID: {}", _id);
+                },
+                "Normal Toast"
+            }
+            button {
+                onclick: move |_| {
+                    let _id = toast.write().popup(ToastInfo::success("Hello World!", "Success"));
+                    println!("New Toast ID: {}", _id);  
+                },
+                "Success Toast"
+            }
+            button {
+                onclick: move |_| {
+                    let _id = toast.write().popup(ToastInfo {
+                        heading: Some("top-right".into()),
+                        context: "Top Right Toast".into(),
+                        allow_toast_close: true,
+                        position: dioxus_toast::Position::TopRight,
+                        icon: None,
+                        hide_after: None
+                    });
+                },
+                "Top Right"
+            }
         }
-    }
-})
+    })
+}
+
 ```

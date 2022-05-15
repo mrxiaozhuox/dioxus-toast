@@ -13,9 +13,9 @@ edition = "2021"
 chrono = { version = "0.4.19", features = ["wasmbind"] }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
-dioxus = { version = "0.2.3", features = ["desktop"] }
+dioxus = { version = "0.2.4", features = ["desktop", "fermi"] }
 tokio = { version = "1.17.0", features = ["time"] }
 
 [target.'cfg(any(target_arch = "wasm32", target_arch = "wasm64"))'.dependencies]
-dioxus = { version = "0.2.3", features = ["web"] }
+dioxus = { version = "0.2.4", features = ["web", "fermi"] }
 gloo-timers = { version = "0.2.3", features = ["futures"] }

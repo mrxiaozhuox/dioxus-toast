@@ -5,12 +5,14 @@ fn main() {
     dioxus::desktop::launch(app)
 }
 
+static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
+
 fn app(cx: Scope) -> Element {
     std::panic::set_hook(Box::new(|info| {
         println!("Panic: {}", info);
     }));
 
-    let toast = use_ref(&cx, ToastManager::default);
+    let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     cx.render(rsx! {
         dioxus_toast::ToastFrame {
