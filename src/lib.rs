@@ -4,49 +4,41 @@
 
 use std::collections::BTreeMap;
 
-use dioxus::prelude::*;
 use dioxus::fermi::UseAtomRef;
+use dioxus::prelude::*;
+use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 struct ToastManagerItem {
     info: ToastInfo,
-    timestamp: i64,
-    hide_after: usize,
+    hide_after: Option<i64>,
 }
 
 #[derive(Default, Debug)]
 pub struct ToastManager {
-    list: BTreeMap<u8, ToastManagerItem>,
-    id_index: u8,
+    list: BTreeMap<Uuid, ToastManagerItem>,
 }
 
 impl ToastManager {
-    pub fn popup(&mut self, option: ToastInfo) -> u8 {
-        self.id_index += 1;
-        let toast_id = self.id_index;
+    pub fn popup(&mut self, info: ToastInfo) -> Uuid {
+        let toast_id = Uuid::new_v4();
 
-        let hide_after = option.hide_after.unwrap_or(0);
-        let timestamp = chrono::Local::now().timestamp();
+        let hide_after = info
+            .hide_after
+            .map(|duration| chrono::Local::now().timestamp() + duration as i64);
 
-        self.list.insert(
-            toast_id,
-            ToastManagerItem {
-                info: option,
-                timestamp,
-                hide_after,
-            },
-        );
+        self.list
+            .insert(toast_id, ToastManagerItem { info, hide_after });
 
         toast_id
     }
 
-    pub fn remove(&mut self, id: u8) {
+    pub fn remove(&mut self, id: Uuid) {
         self.list.remove(&id);
     }
 
     pub fn clear(&mut self) {
         self.list.clear();
-        self.id_index = 0;
     }
 }
 
@@ -225,17 +217,12 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
         async move {
             loop {
                 let timer_list = toast_manager.read().list.clone();
-                for (id, time) in &timer_list {
-                    let time = (time.timestamp, time.hide_after);
-                    let current_time = chrono::Local::now().timestamp();
-                    let expire_time = time.0 + time.1 as i64;
-                    // println!("{:?} -> {:?}", current_time, expire_time);
-                    if current_time >= expire_time && time.1 != 0_usize {
-                        toast_manager.write().list.remove(id);
+                for (id, item) in &timer_list {
+                    if let Some(hide_after) = item.hide_after {
+                        if chrono::Local::now().timestamp() >= hide_after {
+                            toast_manager.write().list.remove(id);
+                        }
                     }
-                }
-                if toast_manager.read().list.is_empty() {
-                    toast_manager.write().id_index = 0;
                 }
                 time_sleep(100).await;
             }
