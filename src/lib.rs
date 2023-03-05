@@ -4,7 +4,8 @@
 
 use std::collections::BTreeMap;
 
-use dioxus::fermi::UseAtomRef;
+// use dioxus::fermi::UseAtomRef;
+use fermi::UseAtomRef;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
@@ -232,26 +233,26 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     cx.render(rsx! {
         div {
             class: "toast-scope",
-            style { [ include_str!("./assets/toast.css") ] },
+            style {  include_str!("./assets/toast.css")  },
             div {
                 class: "toast-wrap bottom-left",
                 id: "wrap-bottom-left",
-                bottom_left_ele
+                bottom_left_ele.into_iter()
             }
             div {
                 class: "toast-wrap bottom-right",
                 id: "wrap-bottom-right",
-                bottom_right_ele
+                bottom_right_ele.into_iter()
             }
             div {
                 class: "toast-wrap top-left",
                 id: "wrap-top-left",
-                top_left_ele
+                top_left_ele.into_iter()
             }
             div {
                 class: "toast-wrap top-right",
                 id: "wrap-top-right",
-                top_right_ele
+                top_right_ele.into_iter()
             }
         }
     })

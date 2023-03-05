@@ -1,8 +1,9 @@
 use dioxus::prelude::*;
+use dioxus_web::launch;
 use dioxus_toast::{ToastFrame, ToastManager, ToastInfo};
 
 fn main() {
-    dioxus::web::launch(app);
+    dioxus_web::launch(app);
 }
 
 fn app(cx: Scope) -> Element {
