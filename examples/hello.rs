@@ -1,13 +1,17 @@
 use dioxus::prelude::*;
+use fermi::{AtomRef, use_atom_ref, use_init_atom_root};
 use dioxus_toast::{ToastInfo, ToastManager};
 
 fn main() {
-    dioxus::desktop::launch(app)
+    dioxus_desktop::launch(app)
 }
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 
 fn app(cx: Scope) -> Element {
+
+    use_init_atom_root(&cx);
+
     std::panic::set_hook(Box::new(|info| {
         println!("Panic: {}", info);
     }));
