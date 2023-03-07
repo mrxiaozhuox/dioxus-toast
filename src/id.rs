@@ -10,8 +10,14 @@ impl ID {
     }
 
     pub fn add(&mut self) -> usize {
+
         let current = self.0;
-        self.0 += 1;
+        if self.0 >= usize::MAX {
+            self.0 = 100000;
+        } else {
+            self.0 += 1;
+        }
+
         current
     }
 }
