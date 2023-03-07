@@ -2,7 +2,7 @@
   <h1>Dioxus Toast</h1>
   <p></p>
     <div>
-    <img src="https://img.shields.io/badge/Dioxus%20Support-0.2.X-green?style=flat-square&logo=Rust"></img>
+    <img src="https://img.shields.io/badge/Dioxus%20Support-0.3.X-green?style=flat-square&logo=Rust"></img>
   	<img src="https://img.shields.io/github/actions/workflow/status/mrxiaozhuox/dioxus-toast/rust.yml?label=Example%20Build&style=flat-square&logo=Github"></img>
   </div>	
   <p></p>
