@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --example hello --verbose
+      run: cargo build --no-default-features --features web --example web --verbose
