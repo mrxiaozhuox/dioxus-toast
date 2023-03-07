@@ -1,13 +1,12 @@
 #![allow(non_snake_case)]
 
-// mod style;
+mod id;
 
 use std::collections::BTreeMap;
 
-// use dioxus::fermi::UseAtomRef;
 use fermi::UseAtomRef;
 use dioxus::prelude::*;
-use uuid::Uuid;
+use id::ID;
 
 #[derive(Debug, Clone)]
 struct ToastManagerItem {
@@ -15,14 +14,34 @@ struct ToastManagerItem {
     hide_after: Option<i64>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct ToastManager {
-    list: BTreeMap<Uuid, ToastManagerItem>,
+    list: BTreeMap<usize, ToastManagerItem>,
+    maximum_toast: u8,
+    id_manager: ID,
 }
 
 impl ToastManager {
-    pub fn popup(&mut self, info: ToastInfo) -> Uuid {
-        let toast_id = Uuid::new_v4();
+
+    pub fn new(maximum_toast: u8) -> Self {
+        Self {
+            list: BTreeMap::new(),
+            maximum_toast,
+            id_manager: ID::new(),
+        }
+    }
+
+    pub fn popup(&mut self, info: ToastInfo) -> usize {
+        
+        let toast_id = self.id_manager.add();
+
+        if self.list.len() >= self.maximum_toast.into() {
+            if let Some(result) = self.list.first_key_value() {
+                let id = result.0.clone();
+                println!("Deleted Toast ID: {:?}", id);
+                self.list.remove(&id);
+            }
+        }
 
         let hide_after = info
             .hide_after
@@ -34,12 +53,18 @@ impl ToastManager {
         toast_id
     }
 
-    pub fn remove(&mut self, id: Uuid) {
+    pub fn remove(&mut self, id: usize) {
         self.list.remove(&id);
     }
 
     pub fn clear(&mut self) {
         self.list.clear();
+    }
+}
+
+impl Default for ToastManager {
+    fn default() -> Self {
+        Self { list: Default::default(), maximum_toast: 6, id_manager: ID::new() }
     }
 }
 
@@ -129,13 +154,9 @@ impl ToastInfo {
 #[derive(Props)]
 pub struct ToastFrameProps<'a> {
     manager: &'a UseAtomRef<ToastManager>,
-
-    #[props(default = 5)]
-    maximum: u8,
 }
 
 pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
-    // println!("{:?}", manager.read());
 
     let manager = cx.props.manager;
 
@@ -146,7 +167,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
     let mut top_left_ele: Vec<LazyNodes> = vec![];
     let mut top_right_ele: Vec<LazyNodes> = vec![];
 
-    for (current_num, (id, item)) in toast_list.iter().enumerate() {
+    for (_, (id, item)) in toast_list.iter().enumerate() {
         let current_id = *id;
 
         let icon_class = if let Some(icon) = &item.info.icon {
@@ -197,10 +218,6 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
                 }
             }
         };
-
-        if current_num >= cx.props.maximum.into() {
-            break;
-        }
 
         if item.info.position == Position::BottomLeft {
             bottom_left_ele.push(element);
