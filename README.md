@@ -1,6 +1,12 @@
-# dioxus-toast
-
-> Add toast support in your dioxus project.
+<div align="center">
+  <h1>Dioxus Toast</h1>
+  <strong>Add toast support in your dioxus project.</strong>
+  <p></p>
+  <div>
+    <img src="https://img.shields.io/badge/Dioxus%20Support-0.2.X-green?style=flat-square&logo=Rust"></img>
+  	<img src="https://img.shields.io/github/actions/workflow/status/mrxiaozhuox/dioxus-toast/rust.yml?label=Example%20Build&style=flat-square&logo=Github"></img>
+  </div>	
+</div>
 
 ```rust
 use dioxus::prelude::*;
