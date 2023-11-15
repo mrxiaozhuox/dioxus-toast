@@ -6,7 +6,7 @@ fn main() {
     dioxus_desktop::launch(app)
 }
 
-static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
+static TOAST_MANAGER: AtomRef<ToastManager> = fermi::AtomRef(|_| ToastManager::default());
 
 fn app(cx: Scope) -> Element {
 
@@ -16,7 +16,7 @@ fn app(cx: Scope) -> Element {
         println!("Panic: {}", info);
     }));
 
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+    let toast = use_atom_ref(&cx, &TOAST_MANAGER);
 
     cx.render(rsx! {
         dioxus_toast::ToastFrame {
