@@ -4,8 +4,8 @@ mod id;
 
 use std::collections::BTreeMap;
 
-use fermi::UseAtomRef;
 use dioxus::prelude::*;
+use fermi::UseAtomRef;
 use id::ID;
 
 #[derive(Debug, Clone)]
@@ -22,7 +22,6 @@ pub struct ToastManager {
 }
 
 impl ToastManager {
-
     pub fn new(maximum_toast: u8) -> Self {
         Self {
             list: BTreeMap::new(),
@@ -32,12 +31,11 @@ impl ToastManager {
     }
 
     pub fn popup(&mut self, info: ToastInfo) -> usize {
-        
         let toast_id = self.id_manager.add();
 
         if self.list.len() >= self.maximum_toast.into() {
             if let Some(result) = self.list.first_key_value() {
-                let id = result.0.clone();
+                let id = *result.0;
                 println!("Deleted Toast ID: {:?}", id);
                 self.list.remove(&id);
             }
@@ -64,7 +62,11 @@ impl ToastManager {
 
 impl Default for ToastManager {
     fn default() -> Self {
-        Self { list: Default::default(), maximum_toast: 6, id_manager: ID::new() }
+        Self {
+            list: Default::default(),
+            maximum_toast: 6,
+            id_manager: ID::new(),
+        }
     }
 }
 
@@ -157,7 +159,6 @@ pub struct ToastFrameProps<'a> {
 }
 
 pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
-
     let manager = cx.props.manager;
 
     let toast_list = &manager.read().list;
@@ -230,7 +231,7 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
         }
     }
 
-    use_future(&cx, (), |_| {
+    use_future(cx, (), |_| {
         let toast_manager = manager.clone();
         async move {
             loop {
