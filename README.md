@@ -12,26 +12,20 @@
 
 ```rust
 use dioxus::prelude::*;
-use fermi::{AtomRef, use_atom_ref, use_init_atom_root};
 use dioxus_toast::{ToastInfo, ToastManager};
 
 fn main() {
-    dioxus_desktop::launch(app)
+    launch(app)
 }
 
-static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
-
-fn app(cx: Scope) -> Element {
-
-    use_init_atom_root(&cx);
-
+fn app() -> Element {
     std::panic::set_hook(Box::new(|info| {
         println!("Panic: {}", info);
     }));
 
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+    let mut toast = use_signal(|| ToastManager::default());
 
-    cx.render(rsx! {
+    rsx! {
         dioxus_toast::ToastFrame {
             manager: toast
         }
@@ -64,7 +58,7 @@ fn app(cx: Scope) -> Element {
                 "Top Right"
             }
         }
-    })
+    }
 }
 
 ```
