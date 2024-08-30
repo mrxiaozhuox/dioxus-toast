@@ -5,7 +5,6 @@ mod id;
 use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
-use fermi::UseAtomRef;
 use id::ID;
 
 #[derive(Debug, Clone)]
@@ -153,22 +152,22 @@ impl ToastInfo {
     }
 }
 
-#[derive(Props)]
-pub struct ToastFrameProps<'a> {
-    manager: &'a UseAtomRef<ToastManager>,
+#[derive(Props, Clone, PartialEq)]
+pub struct ToastFrameProps {
+    manager: Signal<ToastManager>,
 }
 
-pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
-    let manager = cx.props.manager;
+pub fn ToastFrame(props: ToastFrameProps) -> Element {
+    let mut manager = props.manager;
 
     let toast_list = &manager.read().list;
 
-    let mut bottom_left_ele: Vec<LazyNodes> = vec![];
-    let mut bottom_right_ele: Vec<LazyNodes> = vec![];
-    let mut top_left_ele: Vec<LazyNodes> = vec![];
-    let mut top_right_ele: Vec<LazyNodes> = vec![];
+    let mut bottom_left_ele: Vec<VNode> = vec![];
+    let mut bottom_right_ele: Vec<VNode> = vec![];
+    let mut top_left_ele: Vec<VNode> = vec![];
+    let mut top_right_ele: Vec<VNode> = vec![];
 
-    for (_, (id, item)) in toast_list.iter().enumerate() {
+    for (id, item) in toast_list.iter() {
         let current_id = *id;
 
         let icon_class = if let Some(icon) = &item.info.icon {
@@ -187,93 +186,66 @@ pub fn ToastFrame<'a>(cx: Scope<'a, ToastFrameProps<'a>>) -> Element {
         };
 
         let element = rsx! {
-            div {
-                class: "toast-single {icon_class}",
-                id: "{id}",
+            div { class: "toast-single {icon_class}", id: "{id}",
                 if item.info.allow_toast_close {
-                    cx.render(rsx! {
-                        div {
-                            class: "close-toast-single",
-                            onclick: move |_| {
-                                manager.write().list.remove(&current_id);
-                            },
-                            "×",
-                        }
-                    })
+                    div {
+                        class: "close-toast-single",
+                        onclick: move |_| {
+                            manager.write().list.remove(&current_id);
+                        },
+                        "×"
+                    }
                 } else {
-                    None
+                    div {}
                 }
                 if let Some(v) = &item.info.heading {
-                    cx.render(rsx! {
-                        h2 {
-                            class: "toast-heading",
-                            "{v}"
-                        }
-                    })
+                    h2 { class: "toast-heading", "{v}" }
                 } else {
-                    None
+                    div {}
                 }
 
-                span {
-                    dangerous_inner_html: "{item.info.context}",
-                }
+                span { dangerous_inner_html: "{item.info.context}" }
             }
         };
 
         if item.info.position == Position::BottomLeft {
-            bottom_left_ele.push(element);
+            bottom_left_ele.push(element?);
         } else if item.info.position == Position::BottomRight {
-            bottom_right_ele.push(element);
+            bottom_right_ele.push(element?);
         } else if item.info.position == Position::TopLeft {
-            top_left_ele.push(element);
+            top_left_ele.push(element?);
         } else if item.info.position == Position::TopRight {
-            top_right_ele.push(element);
+            top_right_ele.push(element?);
         }
     }
 
-    use_future(cx, (), |_| {
-        let toast_manager = manager.clone();
-        async move {
-            loop {
-                let timer_list = toast_manager.read().list.clone();
-                for (id, item) in &timer_list {
-                    if let Some(hide_after) = item.hide_after {
-                        if chrono::Local::now().timestamp() >= hide_after {
-                            toast_manager.write().list.remove(id);
-                        }
+    let _ = use_resource(move || async move {
+        loop {
+            let timer_list = manager.read().list.clone();
+            for (id, item) in &timer_list {
+                if let Some(hide_after) = item.hide_after {
+                    if chrono::Local::now().timestamp() >= hide_after {
+                        manager.write().list.remove(id);
                     }
                 }
-                time_sleep(100).await;
             }
+            time_sleep(100).await;
         }
     });
 
-    cx.render(rsx! {
-        div {
-            class: "toast-scope",
-            style {  include_str!("./assets/toast.css")  },
-            div {
-                class: "toast-wrap bottom-left",
-                id: "wrap-bottom-left",
-                bottom_left_ele.into_iter()
+    rsx! {
+        div { class: "toast-scope",
+            style { {include_str!("./assets/toast.css")} }
+            div { class: "toast-wrap bottom-left", id: "wrap-bottom-left",
+                {bottom_left_ele.into_iter()}
             }
-            div {
-                class: "toast-wrap bottom-right",
-                id: "wrap-bottom-right",
-                bottom_right_ele.into_iter()
+            div { class: "toast-wrap bottom-right", id: "wrap-bottom-right",
+                {bottom_right_ele.into_iter()}
             }
-            div {
-                class: "toast-wrap top-left",
-                id: "wrap-top-left",
-                top_left_ele.into_iter()
-            }
-            div {
-                class: "toast-wrap top-right",
-                id: "wrap-top-right",
-                top_right_ele.into_iter()
-            }
+            div { class: "toast-wrap top-left", id: "wrap-top-left", {top_left_ele.into_iter()} }
+            div { class: "toast-wrap top-right", id: "wrap-top-right", {top_right_ele.into_iter()} }
         }
-    })
+    }
 }
 
 #[cfg(feature = "web")]
