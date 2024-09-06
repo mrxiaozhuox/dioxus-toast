@@ -11,9 +11,9 @@ edition = "2021"
 [features]
 default = ["desktop"]
 
-desktop = ["tokio"]
+desktop = ["dioxus/desktop", "tokio"]
 
-web = ["gloo-timers"]
+web = ["dioxus/web", "gloo-timers"]
 
 [dependencies]
 chrono = { version = "0.4.38", features = ["wasmbind"] }
