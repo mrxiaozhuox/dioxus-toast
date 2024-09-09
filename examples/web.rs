@@ -1,26 +1,19 @@
 use dioxus::prelude::*;
 use dioxus_toast::{ToastInfo, ToastManager};
-use fermi::{use_atom_ref, use_init_atom_root, AtomRef};
 
 fn main() {
-    dioxus_web::launch(app)
+    launch(app)
 }
 
-static TOAST_MANAGER: AtomRef<ToastManager> = fermi::AtomRef(|_| ToastManager::default());
-
-fn app(cx: Scope) -> Element {
-    use_init_atom_root(&cx);
-
+fn app() -> Element {
     std::panic::set_hook(Box::new(|info| {
         println!("Panic: {}", info);
     }));
 
-    let toast = use_atom_ref(&cx, &TOAST_MANAGER);
+    let mut toast = use_signal(|| ToastManager::default());
 
-    cx.render(rsx! {
-        dioxus_toast::ToastFrame {
-            manager: toast
-        }
+    rsx! {
+        dioxus_toast::ToastFrame { manager: toast }
         div {
             button {
                 onclick: move |_| {
@@ -46,17 +39,19 @@ fn app(cx: Scope) -> Element {
             }
             button {
                 onclick: move |_| {
-                    let _id = toast.write().popup(ToastInfo {
-                        heading: Some("top-right".into()),
-                        context: "Top Right Toast".into(),
-                        allow_toast_close: true,
-                        position: dioxus_toast::Position::TopRight,
-                        icon: None,
-                        hide_after: None
-                    });
+                    let _id = toast
+                        .write()
+                        .popup(ToastInfo {
+                            heading: Some("top-right".into()),
+                            context: "Top Right Toast".into(),
+                            allow_toast_close: true,
+                            position: dioxus_toast::Position::TopRight,
+                            icon: None,
+                            hide_after: None,
+                        });
                 },
                 "Top Right"
             }
         }
-    })
+    }
 }
