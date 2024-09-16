@@ -62,3 +62,37 @@ fn app() -> Element {
 }
 
 ```
+
+## Use Toast for different component.
+
+```rust
+use dioxus::prelude::*;
+
+fn main() {
+    launch(app)
+}
+
+fn app() -> Element {
+    let toast = use_context_provider(|| Signal::new(ToastManager::default()));
+    rsx! {
+        ToastFrame { manager: toast }
+        div {
+            hello {}
+        }
+    }
+}
+
+#[component]
+fn hello() -> Element {
+    // use_context can help you pass toast-manager to different components 
+    let mut toast: Signal<ToastManager> = use_context();
+    rsx! {
+        button {
+            onclick: move |_| {
+                let _ = toast.write().popup(ToastInfo::simple("hello world"));
+            }
+            "Click here!"
+        }
+    }
+}
+```
