@@ -155,6 +155,7 @@ impl ToastInfo {
 #[derive(Props, Clone, PartialEq)]
 pub struct ToastFrameProps {
     manager: Signal<ToastManager>,
+    style: Option<&'static str>,
 }
 
 pub fn ToastFrame(props: ToastFrameProps) -> Element {
@@ -233,17 +234,19 @@ pub fn ToastFrame(props: ToastFrameProps) -> Element {
         }
     });
 
+    let style = props.style.unwrap_or(include_str!("./assets/toast.css"));
+
     rsx! {
         div { class: "toast-scope",
-            style { {include_str!("./assets/toast.css")} }
+            style { { style } }
             div { class: "toast-wrap bottom-left", id: "wrap-bottom-left",
-                {bottom_left_ele.into_iter()}
+                { bottom_left_ele.into_iter() }
             }
             div { class: "toast-wrap bottom-right", id: "wrap-bottom-right",
-                {bottom_right_ele.into_iter()}
+                { bottom_right_ele.into_iter() }
             }
-            div { class: "toast-wrap top-left", id: "wrap-top-left", {top_left_ele.into_iter()} }
-            div { class: "toast-wrap top-right", id: "wrap-top-right", {top_right_ele.into_iter()} }
+            div { class: "toast-wrap top-left", id: "wrap-top-left", { top_left_ele.into_iter() } }
+            div { class: "toast-wrap top-right", id: "wrap-top-right", { top_right_ele.into_iter() } }
         }
     }
 }
