@@ -222,14 +222,14 @@ pub fn ToastFrame(props: ToastFrameProps) -> Element {
 
     let _ = use_resource(move || async move {
         loop {
-            let timer_list = manager.read().list.clone();
-            for (id, item) in &timer_list {
+            let now = chrono::Local::now().timestamp();
+            manager.write().list.retain(|_, item| {
                 if let Some(hide_after) = item.hide_after {
-                    if chrono::Local::now().timestamp() >= hide_after {
-                        manager.write().list.remove(id);
-                    }
+                    now < hide_after
+                } else {
+                    true
                 }
-            }
+            });
             time_sleep(100).await;
         }
     });
